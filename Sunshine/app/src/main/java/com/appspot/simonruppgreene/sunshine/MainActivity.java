@@ -1,16 +1,26 @@
 package com.appspot.simonruppgreene.sunshine;
 
+import android.os.AsyncTask;
+import android.os.Debug;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -54,10 +64,52 @@ public class MainActivity extends ActionBarActivity {
         public PlaceholderFragment() {
         }
 
+        private String getUrlData(String url){
+            try {
+                DefaultHttpClient httpClient = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(url);
+
+                HttpResponse httpResponse = httpClient.execute(httpGet);
+                HttpEntity httpEntity = httpResponse.getEntity();
+                String output = EntityUtils.toString(httpEntity);
+
+                return output;
+            } catch(Exception e) {
+                return "Something went wrong, "+e;
+            }
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+            String[] fakeData = {
+                    "Today - Sunny - 88 / 63",
+                    "Tomorrow - Sunny - 40 / 23",
+                    "Wednesday - Partly Cloudy - 40 / 20",
+                    "Thursday - kfdsaklfdasf",
+                    "Friday - kfdsaklfdasf",
+                    "Saturday - kfdsaklfdasf",
+                    "Tomorrow - Sunny - 40 / 23",
+                    "Wednesday - Partly Cloudy - 40 / 20",
+                    "Thursday - kfdsaklfdasf",
+                    "Friday - kfdsaklfdasf",
+                    "Saturday - kfdsaklfdasf",
+                    "Tomorrow - Sunny - 40 / 23",
+                    "Wednesday - Partly Cloudy - 40 / 20",
+                    "Thursday - kfdsaklfdasf",
+                    "Friday - kfdsaklfdasf",
+                    "Saturday - kfdsaklfdasf",
+                    "Sunday - kfdsaklfdasf"
+            };
+
+            ArrayAdapter Adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast,R.id.list_item_forecast_textview, fakeData);
+            String urlDataTest = getUrlData("http://api.openweathermap.org/data/2.5/weather?lat=35&lon=138");
+            Log.d("myTag",urlDataTest);
+            ListView forecastList = (ListView) rootView.findViewById(R.id.listview_forecast);
+            forecastList.setAdapter(Adapter);
+
             return rootView;
         }
     }
